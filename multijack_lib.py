@@ -126,10 +126,16 @@ def get_round_values(players):
 
 
 def gen_perm_values(num_of_players):
-    players = []
+    ties = []
+    wins = []
+    losses = []
+    names = []
     for x in range(num_of_players):
-        players.append(Player(x))
-    return players
+        ties.append(0)
+        wins.append(0)
+        losses.append(0)
+        names.append('Player ' + str(x))
+    return names, wins, ties, losses 
 
 
 def find_best(totals, hands):
@@ -146,15 +152,15 @@ def find_best(totals, hands):
     return highest, shortest
 
 
-def find_winners(totals, hands, players):
+def find_winners(totals, hands, losses):
     highest, shortest = find_best(totals, hands)
     winners = []
     for x in range(len(totals)):
         if totals[x] == highest and len(hands[x]) == shortest:
             winners.append(x)
         else:
-            players[x].add_loss()
-    return winners, players
+            losses[x] += 1
+    return winners, losses
 
 
 def add_aces(card1, card2, aces):
@@ -165,7 +171,7 @@ def add_aces(card1, card2, aces):
     return aces
 
 
-def print_winners(players, winners, wins, ties):
+def print_winners(player_names, winners, wins, ties):
     if len(winners) > 1:
         names = ''
         string = 'The winners are:'
@@ -187,7 +193,7 @@ def print_data(player_names, wins, ties, losses, stage, hands, totals):
         for card in hands[i]:
             hand += (card + ", ")
         hand = hand[:-2]
-        print("{}{}{} card's include: {}{}{} for a total of: {}{}{} points.".format(c.m, player_names[i], c.x, c.y, hand, c.x, c.b, totals[i], c.x))
+        print("{}{}{}'s card's include: {}{}{} for a total of: {}{}{} points.".format(c.m, player_names[i], c.x, c.y, hand, c.x, c.b, totals[i], c.x))
     print('\nplayer  |wins|ties|losses|%win/tie|%lose')
     for x in range(len(player_names)):
         losspercent = round(losses[x]/(stage+1)*100, 2)
@@ -247,8 +253,8 @@ def start_game():
     deck = create_cards() * 8
     rounds = round((52 * 8) / (4 * players))
     shuffle(deck)
-    player_classes = gen_perm_values(players)
+    player_names, wins, ties, losses = gen_perm_values(players)
     print_starting_data(rounds)
-    return players, player_classes, deck, rounds
+    return players, player_names, wins, ties, losses, deck, rounds
 
 

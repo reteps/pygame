@@ -7,26 +7,29 @@ alphabet = list(string.ascii_lowercase + string.ascii_uppercase)
 numbers = ['1','2','3','4']
 seq = [random.choice(numbers)]
 level = 1
-input("""Welcome to nimon (number simon)! This game is similar to the memory game 'simon', in which you press the lights in the order they light up.
-Of course, this game uses numbers instead. When you start the round, a series of numbers will appear, with a letter beside it to tell
-sequences apart. You will input the sequence of numbers that appears, and if you get it right, you will proceed to the next round.
-Remember, it just adds a number on, so you don't have to memorize an entirely new sequence every time!\n\nPress enter to continue\n""")
-while True:
-    print(c.cl + 'Level',level)
-    input('Press enter to start the round\n')
-    print(c.cl)
-    for position, number in enumerate(seq):
-        print(number + '|' + alphabet[position])
-        time.sleep(0.3)
-        print(c.clear)
-    x = input('> ')
-    if x == ''.join(seq):
-        print('Well done!')
-        time.sleep(0.3)
-        seq.append(random.choice(numbers))
-        level += 1
-    else:
-        break
+try:
+    input("""Welcome to nimon (number simon)! This game is similar to the memory game 'simon', in which you press the lights in the order they light up.
+    Of course, this game uses numbers instead. When you start the round, a series of numbers will appear, with a letter beside it to tell
+    sequences apart. You will input the sequence of numbers that appears, and if you get it right, you will proceed to the next round.
+    Remember, it just adds a number on, so you don't have to memorize an entirely new sequence every time!\n\nPress enter to continue\n""")
+    while True:
+        print(c.cl + 'Level',level)
+        input('Press enter to start the round\n')
+        print(c.cl)
+        for position, number in enumerate(seq):
+            print(number + '|' + alphabet[position])
+            time.sleep(0.3)
+            print(c.clear)
+        x = input('> ')
+        if x == ''.join(seq):
+            print('Well done!')
+            time.sleep(0.3)
+            seq.append(random.choice(numbers))
+            level += 1
+        else:
+            break
 
-print('You lose!')
-print('You put ' + x + ' when it was really ' + ''.join(seq))
+    print('You lose!')
+    print('You put ' + x + ' when it was really ' + ''.join(seq))
+except KeyboardInterrupt:
+    exit()

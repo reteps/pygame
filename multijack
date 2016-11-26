@@ -6,7 +6,7 @@ import multijack_lib as bl
 
 
 if __name__ == '__main__':
-    players, player_classes, deck, rounds = bl.start_game()
+    players, player_names, wins, losses, ties, deck, rounds = bl.start_game()
     try:
         input('{}Press{} enter{} to continue.\n'.format(c.x, c.m, c.x))
         bl.knows_how_to_play()
@@ -18,8 +18,7 @@ if __name__ == '__main__':
             if len(start) != 0:
                 exit()
             for z in range(players):
-                player = player_classes[z]
-                print('{}{}{}{}'.format(c.cl, c.v, player.name, c.x))
+                print('{}{}{}{}'.format(c.cl, c.v, player_names[z], c.x))
                 title1, title2, totals[z], deck = bl.get_two_cards(deck)
                 hands[z].append(title1)
                 hands[z].append(title2)
