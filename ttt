@@ -35,7 +35,7 @@ def take_turn(character, grid):
                 else:
                     print('Invalid move.')
                     continue
-            except ValueError:
+            except (ValueError, TypeError):
                 print('Invalid move.')
         except KeyboardInterrupt():
             exit()
@@ -52,14 +52,15 @@ def is_winner(character, grid):
         if char_1 == character and char_2 == character and char_3 == character:
             return True
     return False
-while True:
-    grid = take_turn('X',grid)
-    if is_winner('X',grid) == True:
-        print('You win, X!')
-        break
-    grid = take_turn('0',grid)
-    if is_winner('0',grid) == True:
-        print('You win, 0!')
-        break
+if __name__ == '__main__':
+    while True:
+        grid = take_turn('X',grid)
+        if is_winner('X',grid) == True:
+            print('You win, X!')
+            break
+        grid = take_turn('0',grid)
+        if is_winner('0',grid) == True:
+            print('You win, 0!')
+            break
 
 
