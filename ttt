@@ -35,9 +35,9 @@ def take_turn(character, grid):
                 else:
                     print('Invalid move.')
                     continue
-            except (ValueError, TypeError):
+            except (ValueError, IndexError):
                 print('Invalid move.')
-        except KeyboardInterrupt():
+        except KeyboardInterrupt:
             exit()
     return grid
 def is_winner(character, grid):
