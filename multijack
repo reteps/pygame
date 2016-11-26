@@ -1,0 +1,34 @@
+#!/usr/bin/env python3
+'''a multiplayer blackjack game'''
+import skilstak.colors as c
+import multijack_lib as bl
+
+
+
+if __name__ == '__main__':
+    players, player_classes, deck, rounds = bl.start_game()
+    try:
+        input('{}Press{} enter{} to continue.\n'.format(c.x, c.m, c.x))
+        bl.knows_how_to_play()
+        print(c.cl)
+        for stage in range(rounds-1):
+            first_time, hands, totals, aces = bl.get_round_values(players)
+            print('{}Round {}{}'.format(c.x, c.b, stage+1))
+            start = input('{}Press{} enter{} to start the round, otherwise type anything.\n'.format(c.x, c.m, c.x))
+            if len(start) != 0:
+                exit()
+            for z in range(players):
+                player = player_classes[z]
+                print('{}{}{}{}'.format(c.cl, c.v, player.name, c.x))
+                title1, title2, totals[z], deck = bl.get_two_cards(deck)
+                hands[z].append(title1)
+                hands[z].append(title2)
+                aces[z] = bl.add_aces(title1, title2, aces[z])
+                bl.print_hand(title1, title2, totals[z])
+                totals, deck = bl.handle_betting(players, hands, first_time, z, deck, totals, aces)
+            winners, losses = bl.find_winners(totals, hands, losses)
+            wins, ties = bl.print_winners(player_names, winners, wins, ties)
+            bl.print_data(player_names, wins, ties, losses, stage, hands, totals)
+    except KeyboardInterrupt:
+        print(c.cl)
+        exit()

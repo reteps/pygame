@@ -1,0 +1,195 @@
+#!/usr/bin/env python3
+import skilstak.colors as c
+import random
+import time
+def bet():
+    global tokens
+    bet.cBet = input("How many tokens would you like to bet?"+c.green+" All "+c.b01+ "to go all in > ").lower()
+    if bet.cBet == "all":
+        bet.cBet = int(tokens)
+        if tokens == 0:
+            print("You lost. You're all out of tokens!")
+            exit()
+    else:
+        bet.cBet = int(bet.cBet)
+        if bet.cBet > tokens:
+            if tokens == 0:
+                print("You lost. You're all out of tokens!")
+                exit()
+            else:
+                print("You can't bet what you don't have...")
+                print("Your bet was changed to all your credits, or all in.")
+                bet.cBet = tokens
+                time.sleep(2)
+    return bet.cBet, tokens
+def computerPlay():
+    global mode 
+    cscore = sum(chand)
+    score = sum(hand)
+    if mode == True:
+        '''computer is intelligent, knows when score is over user score and stops'''
+        while cscore < 17:
+            '''adds new cards to computer's hand'''
+            chand.append(deck[position])
+            del deck[position]
+            cscore = sum(chand)
+            if cscore > score:
+                break
+        else:
+            if 11 in chand:
+                '''replaces 11 with 1'''
+                chand.remove(11)
+                chand.append(1)
+                cscore = sum(chand)
+                if cscore > 21:
+                    pass
+                else:
+                    computerPlay()
+    else:
+        '''normal computer'''
+        while cscore < 17:
+            '''computer draws untill over 17 points'''
+            chand.append(deck[position])
+            del deck[position]
+            cscore = sum(chand)
+        else:
+            if 11 in chand:
+                chand.remove(11)
+                chand.append(1)
+                cscore = sum(chand)
+                if cscore > 21:
+                    pass
+                else:
+                    computerPlay()
+def winOrLose():
+    global cwins
+    global wins
+    global tokens
+    cscore = sum(chand)
+    score = sum(hand)
+
+    if cscore > 21:
+        '''determines if computer orplayer is busted'''
+        cbust = "y"
+        if score > 21:
+            bust = "y"
+        else:
+            bust = "n"
+    else:
+        cbust = "n"
+        if score > 21:
+            bust = "y"
+        else:
+            bust = "n"
+    print(c.cl + "The computer's hand was" + str(chand))
+    print("Your hand was" + str(hand))
+
+    if cbust == "y":
+        '''determines if computer/player won, adds/subtracts tokens, add/subtract point to score'''
+        if bust == "y":
+            print(c.yellow + "It's a tie!" + c.base01)
+            print("P",wins,": C",cwins)
+        else:
+            print(c.green + "You won!" + c.b01)
+            wins += 1
+            print("P",wins,": C",cwins)
+            tokens += bet.cBet
+            print("You now have",tokens," tokens")
+    elif bust == "y":
+        if cbust == "y":
+            print(c.yellow + "It's a tie!" + c.b01)
+            print("P",wins,": C",cwins)
+        else:
+            print(c.red + "You lost."+ c.b01)
+            cwins += 1
+            print("P",wins,": C",cwins)
+            tokens -= bet.cBet
+            print("You now have",tokens," tokens")
+    else:
+        if cscore > score:
+            print(c.red + "You lost."+ c.b01)
+            cwins += 1
+            print("P",wins,": C",cwins)
+            tokens -= bet.cBet
+            print("You now have",tokens," tokens")
+        elif cscore < score:
+            print(c.green + "You won!" + c.b01)
+            wins += 1
+            print("P",wins,": C",cwins)
+            tokens += bet.cBet
+            print("You now have",tokens," tokens")
+        else:
+            print(c.yellow + "It's a tie!" + c.b01)
+            print("P",wins,": C",cwins)
+def playAgain():
+    again = input("Would you like to play again?(y/n) > ")
+    if again == "y":
+        print(c.cl)
+    else:
+        exit()
+def newcard():
+    score = sum(hand)
+    while score <= 21:
+        userCard = input(c.b01 + "Would you like a new card?(y/n) > ").lower()
+        '''adds  a new card to user's hand if they want to'''
+        if userCard == "y":
+            hand.append(deck[position])
+            score = sum(hand)
+            del deck[position]
+            print(c.cl + "Your hand contains " + str(hand) + " for a total of",score,"points.")
+
+        else:
+            break
+    else:
+        if 11 in hand:
+            '''changes 11 in hand to 1'''
+            hand.remove(11)
+            print(c.cl + "Your ace valued 11 was changed into a 1")
+            hand.append(1)
+            score = sum(hand)
+            print("You now have"+str(hand)+"and",score,"Points")
+            if score < 21:
+                '''go to  beginning or has computer play depending'''
+                newcard()
+        else:
+            pass
+def shuffleAndStart():
+    print(c.cl)
+    random.shuffle(deck)
+    hand.append(deck[position]) 
+    del deck[position]
+    hand.append(deck[position]) 
+    del deck[position]
+    score = sum(hand)
+    '''shuffles the deck, deals the player 1 card''' 
+    print("Your hand contains: "+ str(hand) + " for a total of", score,"points.")
+if __name__ == '__main__':
+    try:
+        print(c.cl + c.b01 + "Welcome to Blackjack V 1.0! Created by Peter")
+        print("You have 100 tokens.")
+        tokens = 100
+        hardDifficulty = input("Would you like an" + c.red + " intelligent computer"+c.b01+ "(y/n) > ").lower()
+        if hardDifficulty == "y":
+            mode = True
+        else:
+            mode = False
+        deck = [2,3,4,5,6,7,8,9,10,10,10,10,11] * 4
+        hand = []
+        chand = []
+        cwins = 0
+        wins = 0
+        position = 0
+        #Which card to pull out of deck
+        while True:
+            bet()
+            shuffleAndStart()
+            newcard()
+            computerPlay()
+            winOrLose()
+            playAgain()
+            del hand[:]
+            del chand[:]
+            deck = [2,3,4,5,6,7,8,9,10,10,10,10,11] * 4
+    except KeyboardInterrupt:
+        print(c.cl + "Thanks for playing!\n" + c.x)
+        exit()

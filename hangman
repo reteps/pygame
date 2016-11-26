@@ -1,0 +1,90 @@
+#!/usr/bin/env python3
+import skilstak.colors as c
+import time
+def intro():
+    print(c.cl + 'welcome to hangman!')
+    x = list(input('Input a word > '))
+    time.sleep(1)
+    print(c.cl)
+    z = ['_'] * len(x)
+    for letter in range(len(x)):
+        if x[letter] ==" ":
+            z[letter] = " | "
+    return x,z
+guesses = 6
+letters = []
+asciiart = [r'''    
+      _________
+    |         |
+    |         0
+    |        /|\
+    |        / \
+    |
+    |-----------''',r'''
+      _________
+    |         |
+    |         0
+    |        /|\
+    |        /
+    |
+    |-----------''',r'''
+      _________
+    |         |
+    |         0
+    |        /|\
+    |         
+    |
+    |----------''','''
+      _________
+    |         |
+    |         0
+    |        /|
+    |         
+    |
+    |-----------''','''
+     _________
+    |         |
+    |         0
+    |         |
+    |        
+    |
+    |------------''','''
+     _________
+    |         |
+    |         0
+    |        
+    |        
+    |
+    |__________''','''
+        _________
+    |         |
+    |        
+    |        
+    |        
+    |
+    |__________
+    ''']
+x, z = intro()
+print(' '.join(z))
+while guesses > 0 and '_' in z:
+    y = input('letter > ')
+    if y not in letters:
+        letters.append(y)
+        if y in x:
+            for letter in range(len(x)):
+                if x[letter] == y:
+                    z[letter] = y
+            print(' '.join(z))
+        else:
+        
+            guesses -= 1
+            print('You have',guesses,'guesses.')\
+
+            print(asciiart[guesses])
+    else:
+        print('already guessed that letter.')
+if '_' in z:
+    print('You lose. Correct word was ' +''.join(x))
+else:
+    print('You win!')
+

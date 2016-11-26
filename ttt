@@ -1,0 +1,33 @@
+#!/usr/bin/env python3
+grid = [[' ','1','2','3'],['a',' ',' ',' '],['b',' ',' ',' '],['c',' ',' ',' ']]
+min_alpha = ['','a','b','c']
+combinations = [[11,12,13],[21,22,23],[31,32,33],[11,21,31],[12,22,32],[13,23,33],[11,22,33],[13,22,31]]
+
+def get_char(grid, row, col):
+    return grid[row][col]
+
+def is_valid(grid,row, col):
+    if row in ['1','2','3'] and col in ['1','2','3'] and get_char(grid,row,col) not in ['X','0']:
+            return True
+    return False
+
+def print_grid(grid):
+for row in grid:
+    myrow = ''
+    for item in row:
+        myrow += item + ' '
+    print(myrow)
+def take_turn(character, grid):
+    print(character + "'s turn")
+    line = input('where would you like to go? > ')
+    row = int(line.split()[0])
+    col = (min_alpha.index(line.split()[1]))
+    if is_valid(grid, row, col):
+        grid[row][col] == 'X':
+    print_grid(grid)
+    return grid
+while is_winner('X',grid) == False and is_winner('0',grid) == False:
+    grid = take_turn('X',grid)
+    grid = take_turn('0',grid)
+
+
