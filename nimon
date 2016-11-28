@@ -7,6 +7,10 @@ alphabet = list(string.ascii_lowercase + string.ascii_uppercase)
 numbers = ['1','2','3','4']
 seq = [random.choice(numbers)]
 level = 1
+def get_scores():
+    with open('nimon.txt') as f:
+        f.read()
+
 try:
     input("""Welcome to nimon (number simon)! This game is similar to the memory game 'simon', in which you press the lights in the order they light up.
     Of course, this game uses numbers instead. When you start the round, a series of numbers will appear, with a letter beside it to tell
