@@ -4,14 +4,25 @@ import time
 import random
 import string
 alphabet = list(string.ascii_lowercase + string.ascii_uppercase)
-numbers = ['1','2','3','4']
+numbers = ['1','2','3','4','5','6','7','8','9']
 seq = [random.choice(numbers)]
 level = 1
-def get_scores():
+def add_score(score,name):
+    f = open("nimon.txt","w")
+    line = str(score) + ' ' + name
+    f.write(line)
+    f.close()
+
+def get_best_score():
     with open('nimon.txt') as f:
-        f.read()
+        raw_scores = f.read()
+        f.close()
+    return int(raw_scores.split('\n')[0].split(' ')[0])
 
 try:
+    print('HIGHSCORE\n--------------')
+    with open('nimon.txt') as f: 
+            print(f.read())
     input("""Welcome to nimon (number simon)! This game is similar to the memory game 'simon', in which you press the lights in the order they light up.
     Of course, this game uses numbers instead. When you start the round, a series of numbers will appear, with a letter beside it to tell
     sequences apart. You will input the sequence of numbers that appears, and if you get it right, you will proceed to the next round.
@@ -25,15 +36,23 @@ try:
             time.sleep(0.3)
             print(c.clear)
         x = input('> ')
-        if x == ''.join(seq):
+        if x == 'hackermode_666_420_mlg_nosescope_dorito_doge_1_2_4_8_16_32_64_128_256_512_1024':
+            print(':P')
+            seq.append(random.choice(numbers))
+            level += 100
+
+        elif x == ''.join(seq):
             print('Well done!')
             time.sleep(0.3)
             seq.append(random.choice(numbers))
             level += 1
         else:
             break
-
-    print('You lose!')
+    if level >= get_best_score():
+        print('Add your high score!')
+        name = input('Your Name >')
+        add_score(level, name)
+    print('You ending on round',level)
     print('You put ' + x + ' when it was really ' + ''.join(seq))
 except KeyboardInterrupt:
     exit()
