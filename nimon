@@ -17,16 +17,26 @@ def add_score(score,name):
 
 def get_scores():
     with open('nimon.txt') as f:
-        scores = f.read().split('\n')
+        scores = f.read().strip().split('\n')
         f.close()
-    print(scores)
-    scores.sort(reverse=True)
-    return scores
+    high_scores = []
+    names = []
+    for score in scores:
+        num = score.split(' = ')[0]
+        name = score.split(' = ')[1]
+        high_scores.append(num)
+        names.append(name)
+    #????
+    high_scores.sort(reverse=True)
+    print(high_scores)
+    return high_scores, names
 def game():
     print('HIGHSCORE\n--------------')
-    top5 = get_scores()[:5]
-    print('\n'.join(map(str, top5)))
-    input("""Welcome to nimon (number simon)! This game is similar to the memory game 'simon', in which you press the lights in the order they light up.
+    high_scores, names = get_scores()
+    score_dict = dict(zip(high_scores[:5], names[:5]))
+    for k,v in score_dict.items():
+        print(k,v)
+    input("""Welc me to nimon (number simon)! This game is similar to the memory game 'simon', in which you press the lights in the order they light up.
     Of course, this game uses numbers instead. When you start the round, a series of numbers will appear, with a letter beside it to tell
     sequences apart. You will input the sequence of numbers that appears, and if you get it right, you will proceed to the next round.
     Remember, it just adds a number on, so you don't have to memorize an entirely new sequence every time!
