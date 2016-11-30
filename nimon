@@ -22,7 +22,6 @@ def get_scores():
     scores.sort(reverse=True)
     return scores
 def game():
-    level = 1
     print('HIGHSCORE\n--------------')
     top5 = get_scores()[:5]
     print('\n'.join(map(str, top5)))
@@ -31,9 +30,16 @@ def game():
     sequences apart. You will input the sequence of numbers that appears, and if you get it right, you will proceed to the next round.
     Remember, it just adds a number on, so you don't have to memorize an entirely new sequence every time!
 
-    **NOTE - Press r to reprint the level
-
+    Press r to reprint the level
+    Press s to add a 10th of a second
+    Press f to remove a 10th of a second
+    Press a to add a number per iteration (2 numbers at once added, etc.)
+    Press x to remove a number per iteration
+    
     Press enter to continue\n""")
+    level = 1
+    #sleep = 0.4
+    #at_once = 1
     while True:
         print(c.cl + 'Level',level)
         input('Press enter to start the round\n')
