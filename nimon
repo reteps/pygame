@@ -1,87 +1,87 @@
-#!/usr/bin/env python3                                                                                                                                                      
-import skilstak.colors as c                                                                                                                                                 
-import time                                                                                                                                                                 
-import random                                                                                                                                                               
-import string                                                                                                                                                               
-alphabet = list(string.ascii_lowercase + string.ascii_uppercase)                                                                                                            
-numbers = ['1','2','3','4','5','6','7','8','9']                                                                                                                             
-seq = [random.choice(numbers)]                                                                                                                                              
-scores = []                                                                                                                                                                 
-def add_score(score,name):                                                                                                                                                  
-    score_str = str(score) + ' = ' + str(name)                                                                                                                                  
+#!/usr/bin/env python3
+import skilstak.colors as c
+import time
+import random
+import string
+alphabet = list(string.ascii_lowercase + string.ascii_uppercase)
+numbers = ['1','2','3','4','5','6','7','8','9']
+seq = [random.choice(numbers)]
+scores = []
+def add_score(score,name):
+    score_str = str(score) + ' = ' + str(name)
     scores.append(score_str)
     with open('nimon.txt','w') as f:
         for s in scores:
             f.write(s + '\n')
         f.close()
-                                                                                                                                                                            
-def get_scores():  
+
+def get_scores():
     with open('nimon.txt') as f:
         scores = f.read().split('\n')
         f.close()
-    scores.sort(reverse=True)                                                                                                                                               
-    return scores                                                                                                                                                             
-def game():                                                                                                                                                                                                                                                                                                                           
-    level = 1                                                                                                                                                               
+    scores.sort(reverse=True)
+    return scores
+def game():
+    level = 1
     print('HIGHSCORE\n--------------')
     top5 = get_scores()[:5]
-    print('\n'.join(map(str, top5)))                                                                                                                                                  
-    input("""Welcome to nimon (number simon)! This game is similar to the memory game 'simon', in which you press the lights in the order they light up.                    
-    Of course, this game uses numbers instead. When you start the round, a series of numbers will appear, with a letter beside it to tell                                   
-    sequences apart. You will input the sequence of numbers that appears, and if you get it right, you will proceed to the next round.                                      
+    print('\n'.join(map(str, top5)))
+    input("""Welcome to nimon (number simon)! This game is similar to the memory game 'simon', in which you press the lights in the order they light up.
+    Of course, this game uses numbers instead. When you start the round, a series of numbers will appear, with a letter beside it to tell
+    sequences apart. You will input the sequence of numbers that appears, and if you get it right, you will proceed to the next round.
     Remember, it just adds a number on, so you don't have to memorize an entirely new sequence every time!
 
     **NOTE - Press r to reprint the level
 
-    Press enter to continue\n""")                                 
-    while True:                                                                                                                                                             
-        print(c.cl + 'Level',level)                                                                                                                                         
-        input('Press enter to start the round\n')                                                                                                                           
-        print(c.cl)                                                                                                                                                         
-        for position, number in enumerate(seq):                                                                                                                             
-            print(number + '|' + alphabet[position])                                                                                                                        
-            time.sleep(0.4)                                                                                                                                                 
-            print(c.clear)                                                                                                                                                                                                                                                                                                         
-        x = input('> ')                                                                                                                                                     
-        if x == 'hackermode_666_420_mlg_nosescope_dorito_doge_1_2_4_8_16_32_64_128_256_512_1024':                                                                           
-            print(':P')                                                                                                                                                     
-            seq.append(random.choice(numbers))                                                                                                                              
-            level += 9999                                                                                                                                                   
+    Press enter to continue\n""")
+    while True:
+        print(c.cl + 'Level',level)
+        input('Press enter to start the round\n')
+        print(c.cl)
+        for position, number in enumerate(seq):
+            print(number + '|' + alphabet[position])
+            time.sleep(0.4)
+            print(c.clear)
+        x = input('> ')
+        if x == 'hackermode_666_420_mlg_nosescope_dorito_doge_1_2_4_8_16_32_64_128_256_512_1024':
+            print(':P')
+            seq.append(random.choice(numbers))
+            level += 9999
         elif x == 'r':
             continue
-        elif x == ''.join(seq):                                                                                                                                             
-            print('Well done!')                                                                                                                                             
-            time.sleep(0.3)                                                                                                                                                 
-            seq.append(random.choice(numbers))                                                                                                                              
-            level += 1                                                                                                                                                      
-        else:  
+        elif x == ''.join(seq):
+            print('Well done!')
+            time.sleep(0.3)
+            seq.append(random.choice(numbers))
+            level += 1
+        else:
             break
-    print('You ending on round',level)                                                                                                                                      
-    print('You put ' + x + ' when it was really ' + ''.join(seq))                                                                                                           
-    return level   
-                                                                                                                                                                            
-def end_game(level, scores):                                                                                                                                                           
-    if len(scores) > 5:                                                                                                                                                     
-        if level >= scores[4]:                                                                                                                                              
-            print('\nAdd your high score!')                                                                                                                                 
-            name = input('Your Name > ')                                                                                                                                    
-            add_score(level, name)                                                                                                                                          
-    elif len(scores) <= 5:                                                                                                                                                  
-        print('\nAdd your high score!')                                                                                                                                     
-        name = input('Your Name > ')                                                                                                                                        
-        add_score(level, name)                                                                                                                                              
-                                                                                                                                                                            
-                                                                                                                                                                            
-try:                                                                                                                                                                        
-    while True:                                                                                                                                                             
+    print('You ending on round',level)
+    print('You put ' + x + ' when it was really ' + ''.join(seq))
+    return level
+
+def end_game(level, scores):
+    if len(scores) > 5:
+        if level >= scores[4]:
+            print('\nAdd your high score!')
+            name = input('Your Name > ')
+            add_score(level, name)
+    elif len(scores) <= 5:
+        print('\nAdd your high score!')
+        name = input('Your Name > ')
+        add_score(level, name)
+
+
+try:
+    while True:
         level, seq, x = game()
         scores = get_scores()
         end_game(level, scores)
-        again = input('Would you like to play again? y/n > ').lower()                                                                                                       
-        if again == 'y':                                                                                                                                                    
-            continue     
+        again = input('Would you like to play again? y/n > ').lower()
+        if again == 'y':
+            continue
         elif again == 'n':
             break
             exit()
-except KeyboardInterrupt:                                                                                                                                                   
-    exit()                                                                                                                                                                  
+except KeyboardInterrupt:
+    exit()
