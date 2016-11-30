@@ -3,16 +3,17 @@ import skilstak.colors as c
 import time
 import random
 import string
+import operator
 alphabet = list(string.ascii_lowercase + string.ascii_uppercase)
 numbers = ['1','2','3','4','5','6','7','8','9']
 seq = [random.choice(numbers)]
 scores = []
 def add_score(score,name):
-    score_str = str(score) + ' = ' + str(name)
+    score_str = (score,name)
     scores.append(score_str)
     with open('nimon.txt','w') as f:
         for s in scores:
-            f.write(s + '\n')
+            f.write(str(s[0]) + ' = ' + s[1] + '\n')
         f.close()
 
 def get_scores():
@@ -22,35 +23,32 @@ def get_scores():
     high_scores = []
     names = []
     for score in scores:
-        num = score.split(' = ')[0]
+        num = int(score.split(' = ')[0])
         name = score.split(' = ')[1]
         high_scores.append(num)
         names.append(name)
     #????
-    high_scores.sort(reverse=True)
-    print(high_scores)
-    return high_scores, names
+    score_dict = dict(zip(high_scores, names))
+    #http://stackoverflow.com/questions/613183/sort-a-python-dictionary-by-value
+    sorted_dict = sorted(score_dict.items(), key=operator.itemgetter(0), reverse=True)
+    return sorted_dict
+
+def print_scores(scores_list):
+    
+    for score_tuple in scores_list[:5]:
+
+        print(score_tuple[0],score_tuple[1])
 def game():
-    print('HIGHSCORE\n--------------')
-    high_scores, names = get_scores()
-    score_dict = dict(zip(high_scores[:5], names[:5]))
-    for k,v in score_dict.items():
-        print(k,v)
-    input("""Welc me to nimon (number simon)! This game is similar to the memory game 'simon', in which you press the lights in the order they light up.
-    Of course, this game uses numbers instead. When you start the round, a series of numbers will appear, with a letter beside it to tell
-    sequences apart. You will input the sequence of numbers that appears, and if you get it right, you will proceed to the next round.
-    Remember, it just adds a number on, so you don't have to memorize an entirely new sequence every time!
+    print('HIGHSCORES\n--------------')
+    print_scores(get_scores())
+    input("""Welcome to nimon!
+When you start the round, a series of numbers will appear, with a letter beside it to tell sequences apart. 
+You will input the sequence of numbers that appears, and if you get it right, you will proceed to the next round.
 
     Press r to reprint the level
-    Press s to add a 10th of a second
-    Press f to remove a 10th of a second
-    Press a to add a number per iteration (2 numbers at once added, etc.)
-    Press x to remove a number per iteration
     
     Press enter to continue\n""")
     level = 1
-    #sleep = 0.4
-    #at_once = 1
     while True:
         print(c.cl + 'Level',level)
         input('Press enter to start the round\n')
@@ -60,10 +58,10 @@ def game():
             time.sleep(0.4)
             print(c.clear)
         x = input('> ')
-        if x == 'hackermode_666_420_mlg_nosescope_dorito_doge_1_2_4_8_16_32_64_128_256_512_1024':
-            print(':P')
+        if x == 'testingmode':
             seq.append(random.choice(numbers))
-            level += 9999
+            level_add = int(input('what level to add? . '))
+            level += level_add
         elif x == 'r':
             continue
         elif x == ''.join(seq):
@@ -79,7 +77,7 @@ def game():
 
 def end_game(level, scores):
     if len(scores) > 5:
-        worst_highscore = scores[4].split(' = ')[0]
+        worst_highscore = scores[4][0]
         if level >= worst_highscore:
             print('\nAdd your high score!')
             name = input('Your Name > ')
@@ -95,7 +93,7 @@ try:
         level = game()
         scores = get_scores()
         end_game(level, scores)
-        again = input('Would you like to play again? y/n > ').lower()
+        again = input('Would you like to play again? y/n > ').strip().lower()
         if again == 'y':
             continue
         elif again == 'n':
