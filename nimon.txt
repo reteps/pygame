@@ -1,4 +1,6 @@
-103 = god
+8 = satan
+8 = jakeyboi
+4 = Peter_is_cool
 3 = Peter_test
 1 = pete
-4 = Peter_is_cool
+5 = Jim

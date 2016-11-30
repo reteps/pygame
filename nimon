@@ -26,10 +26,9 @@ def get_scores():
         name = score.split(' = ')[1]
         high_scores.append(num)
         names.append(name)
-    score_dict = dict(zip(high_scores, names))
-    #http://stackoverflow.com/questions/613183/sort-a-python-dictionary-by-value
-    sorted_dict = sorted(score_dict.items(), key=operator.itemgetter(0), reverse=True)
-    return sorted_dict
+    zipped = sorted(list(zip(high_scores,names)), reverse = True)
+    #http://stackoverflow.com/questions/6618515/sorting-list-based-on-values-from-another-list
+    return zipped
 
 def print_scores(scores_list):
     
@@ -40,39 +39,54 @@ def game():
     seq = [random.choice(numbers)]
     print('HIGHSCORES\n--------------')
     print_scores(get_scores())
+    print('---------------')
     input("""Welcome to nimon!
 When you start the round, a series of numbers will appear, with a letter beside it to tell sequences apart. 
 You will input the sequence of numbers that appears, and if you get it right, you will proceed to the next round.
 
-    Press r to reprint the level
-    
+    Press r to reprint the level (it will speed up every time you use it, so good luck)
+    Press a to add an iteration
+    Press s to remove an iteration
+
     Press enter to continue\n""")
     level = 1
+    iterations = 1
+    speed = 0.4
     while True:
         print(c.cl + 'Level',level)
         input('Press enter to start the round\n')
         print(c.cl)
         for position, number in enumerate(seq):
             print(number + '|' + alphabet[position])
-            time.sleep(0.4)
+            time.sleep(speed)
             print(c.clear)
         x = input('> ')
         if x == 'testingmode':
-            seq.append(random.choice(numbers))
             level_add = int(input('what level to add? . '))
+            for count in range(level_add):
+                seq.append(random.choice(numbers))
             level += level_add
         elif x == 'r':
+            if speed >= 0.15:
+                speed -= 0.05
+            continue
+        elif x == 'a':
+            iterations += 1
+        elif x == 's':
+            if iterations > 1:
+                iterations -= 1
             continue
         elif x == ''.join(seq):
             print('Well done!')
             time.sleep(0.3)
-            seq.append(random.choice(numbers))
-            level += 1
+            for count in range(iterations):
+                seq.append(random.choice(numbers))
+            level += iterations
         else:
             break
     print('You ending on round',level)
     print('You put ' + x + ' when it was really ' + ''.join(seq))
-    return level
+    return level - iterations
 
 def end_game(level, scores):
     if len(scores) > 5:
