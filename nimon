@@ -8,16 +8,21 @@ numbers = ['1','2','3','4','5','6','7','8','9']
 seq = [random.choice(numbers)]                                                                                                                                              
 scores = []                                                                                                                                                                 
 def add_score(score,name):                                                                                                                                                  
-    score = str(score) + ' = ' + str(name)                                                                                                                                  
-    scores.append(score)                                                                                                                                                    
+    score_str = str(score) + ' = ' + str(name)                                                                                                                                  
+    scores.append(score_str)
+    with open('nimon.txt','w') as f:
+        f.write(scores)
+        f.close()
                                                                                                                                                                             
-def print_top_scores():                                                                                                                                                     
+def print_top_scores():  
+    with open('nimon.txt') as f:
+        scores = list(f.read())
+        f.close()
     scores.sort(reverse=True)                                                                                                                                               
     top5 = scores[:5]                                                                                                                                                       
     print('\n'.join(map(str, top5)))                                                                                                                                        
                                                                                                                                                                             
-def game():                                                                                                                                                                 
-    global level                                                                                                                                                            
+def game():                                                                                                                                                                                                                                                                                                                           
     level = 1                                                                                                                                                               
     print('HIGHSCORE\n--------------')                                                                                                                                      
     print_top_scores()                                                                                                                                                      
@@ -32,23 +37,23 @@ def game():
         for position, number in enumerate(seq):                                                                                                                             
             print(number + '|' + alphabet[position])                                                                                                                        
             time.sleep(0.3)                                                                                                                                                 
-            print(c.clear)                                                                                                                                                  
-        global x                                                                                                                                                            
+            print(c.clear)                                                                                                                                                                                                                                                                                                         
         x = input('> ')                                                                                                                                                     
         if x == 'hackermode_666_420_mlg_nosescope_dorito_doge_1_2_4_8_16_32_64_128_256_512_1024':                                                                           
             print(':P')                                                                                                                                                     
             seq.append(random.choice(numbers))                                                                                                                              
-            level += 100                                                                                                                                                    
+            level += 9999                                                                                                                                                   
                                                                                                                                                                             
         elif x == ''.join(seq):                                                                                                                                             
             print('Well done!')                                                                                                                                             
             time.sleep(0.3)                                                                                                                                                 
             seq.append(random.choice(numbers))                                                                                                                              
             level += 1                                                                                                                                                      
-        else:                                                                                                                                                               
-            break                                                                                                                                                           
+        else:  
+            break
+            return level, seq, x                                                                                                                                                          
                                                                                                                                                                             
-def end(level,x):                                                                                                                                                           
+def end(level, scores, seq, x):                                                                                                                                                           
     if len(scores) > 5:                                                                                                                                                     
         if level >= scores[4]:                                                                                                                                              
             print('\nAdd your high score!')                                                                                                                                 
@@ -64,20 +69,14 @@ def end(level,x):
                                                                                                                                                                             
 try:                                                                                                                                                                        
     while True:                                                                                                                                                             
-        game()                                                                                                                                                              
-        if len(scores) > 5:                                                                                                                                                 
-            if level >= scores[4]:                                                                                                                                          
-                print('\nAdd your high score!')                                                                                                                             
-                name = input('Your Name > ')                                                                                                                                
-                add_score(level, name)                                                                                                                                      
-        elif len(scores) <= 5:                                                                                                                                                                                                                                                                            
-            print('\nAdd your high score!')                                                                                                                                 
-            name = input('Your Name > ')                                                                                                                                    
-            add_score(level, name)                                                                                                                                          
-        print('You ended on round',level)                                                                                                                                   
-        print('You put ' + x + ' when it was really ' + ''.join(seq))                                                                                                       
+        level, seq, x = game()
+        scores = get_scores()
+        end(level, scores, seq, x)
         again = input('Would you like to play again? y/n > ').lower()                                                                                                       
         if again == 'y':                                                                                                                                                    
-            continue                                                                                                                                                        
+            continue     
+        elif again == 'n':
+            break
+            exit()
 except KeyboardInterrupt:                                                                                                                                                   
     exit()                                                                                                                                                                  
