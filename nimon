@@ -19,6 +19,7 @@ def get_scores():
     with open('nimon.txt') as f:
         scores = f.read().split('\n')
         f.close()
+    print(scores)
     scores.sort(reverse=True)
     return scores
 def game():
@@ -68,7 +69,8 @@ def game():
 
 def end_game(level, scores):
     if len(scores) > 5:
-        if level >= scores[4]:
+        worst_highscore = scores[4].split(' = ')[0]
+        if level >= worst_highscore:
             print('\nAdd your high score!')
             name = input('Your Name > ')
             add_score(level, name)
@@ -80,7 +82,7 @@ def end_game(level, scores):
 
 try:
     while True:
-        level, seq, x = game()
+        level = game()
         scores = get_scores()
         end_game(level, scores)
         again = input('Would you like to play again? y/n > ').lower()
