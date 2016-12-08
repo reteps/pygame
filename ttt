@@ -55,11 +55,11 @@ def is_winner(character, grid):
 if __name__ == '__main__':
     while True:
         grid = take_turn('X',grid)
-        if is_winner('X',grid) == True:
+        if is_winner('X',grid) == True or ' ' not in grid:
             print('You win, X!')
             break
         grid = take_turn('0',grid)
-        if is_winner('0',grid) == True:
+        if is_winner('0',grid) == True or ' ' not in grid:
             print('You win, 0!')
             break
 

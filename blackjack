@@ -1,195 +1,130 @@
 #!/usr/bin/env python3
 import skilstak.colors as c
-import random
-import time
-def bet():
-    global tokens
-    bet.cBet = input("How many tokens would you like to bet?"+c.green+" All "+c.b01+ "to go all in > ").lower()
-    if bet.cBet == "all":
-        bet.cBet = int(tokens)
-        if tokens == 0:
-            print("You lost. You're all out of tokens!")
-            exit()
+from time import sleep
+from random import shuffle
+
+#originally found at https://github.com/retep-mathwizard/pygame/blob/master/multijack_lib.py
+def create_cards():
+    suits = ['diamonds', 'clubs', 'hearts', 'spades']
+    values = [['ace', 11], ['jack', 10], ['queen', 10], ['king', 10], ['2', 2], ['3', 3], ['4', 4], ['5', 5], ['6', 6], ['7', 7], ['8', 8], ['9', 9], ['10', 10]]
+    standard_deck = []
+    for card_list in values:
+        for suit in suits:
+            word = card_list[0] + " of " + suit
+            value = card_list[1]
+            minilist = [word, value]
+            standard_deck.append(minilist)
+    return standard_deck
+
+
+def print_rules():
+    print('''{}Objective{}:Get as close to 21 points without going over.
+{}How to win{}:Be the closest to 21 points. If you go over, you lose.
+{}Point values{}:All cards are worth the value on the card, and face cards are worth 10.
+{}Aces{}:Aces can be used as 1 or 11 points.'''.format(c.y, c.x, c.y, c.x, c.y, c.x, c.y, c.x))
+    input('Press enter to continue.\n')
+
+
+def knows_how_to_play():
+    answered = False
+    while answered is False:
+        answer = input('{}{}Does you know how to play blackjack?({}Y{}/{}n{}) > {}'.format(c.x, c.cl, c.g, c.x, c.r, c.x, c.c)).lower().strip()
+        if 'y' in answer:
+            answered = True
+        elif 'n' in answer:
+            answered = True
+            print_rules()
+        else:
+            print('{}Invalid. Please say {}yes{} or {}no{}.'.format(c.x, c.g, c.x, c.r, c.x))
+
+def get_two_cards(deck):
+    card = deck.pop()
+    card2 = deck.pop()
+    if 'ace' in card[0] and 'ace' in card2[0]:
+        total = 12
     else:
-        bet.cBet = int(bet.cBet)
-        if bet.cBet > tokens:
-            if tokens == 0:
-                print("You lost. You're all out of tokens!")
-                exit()
-            else:
-                print("You can't bet what you don't have...")
-                print("Your bet was changed to all your credits, or all in.")
-                bet.cBet = tokens
-                time.sleep(2)
-    return bet.cBet, tokens
-def computerPlay():
-    global mode 
-    cscore = sum(chand)
-    score = sum(hand)
-    if mode == True:
-        '''computer is intelligent, knows when score is over user score and stops'''
-        while cscore < 17:
-            '''adds new cards to computer's hand'''
-            chand.append(deck[position])
-            del deck[position]
-            cscore = sum(chand)
-            if cscore > score:
+        total = card[1] + card2[1]
+    title_one = card[0]
+    title_two = card2[0]
+    return [title_one, title_two], total, deck
+def ask_to_hit(hand, first_time):
+    try:
+        while True:
+            item_string = 'Your hand contains:'
+            if first_time is False:
+                for item in hand:
+                    item_string += item + ' '
+                print(item_string)
+            want_to_hit = input('Would you like to hit (take another card)? > ' + c.c).strip().lower()
+            if 'y' in want_to_hit:
+                return True
                 break
-        else:
-            if 11 in chand:
-                '''replaces 11 with 1'''
-                chand.remove(11)
-                chand.append(1)
-                cscore = sum(chand)
-                if cscore > 21:
-                    pass
-                else:
-                    computerPlay()
-    else:
-        '''normal computer'''
-        while cscore < 17:
-            '''computer draws untill over 17 points'''
-            chand.append(deck[position])
-            del deck[position]
-            cscore = sum(chand)
-        else:
-            if 11 in chand:
-                chand.remove(11)
-                chand.append(1)
-                cscore = sum(chand)
-                if cscore > 21:
-                    pass
-                else:
-                    computerPlay()
-def winOrLose():
-    global cwins
-    global wins
-    global tokens
-    cscore = sum(chand)
-    score = sum(hand)
-
-    if cscore > 21:
-        '''determines if computer orplayer is busted'''
-        cbust = "y"
-        if score > 21:
-            bust = "y"
-        else:
-            bust = "n"
-    else:
-        cbust = "n"
-        if score > 21:
-            bust = "y"
-        else:
-            bust = "n"
-    print(c.cl + "The computer's hand was" + str(chand))
-    print("Your hand was" + str(hand))
-
-    if cbust == "y":
-        '''determines if computer/player won, adds/subtracts tokens, add/subtract point to score'''
-        if bust == "y":
-            print(c.yellow + "It's a tie!" + c.base01)
-            print("P",wins,": C",cwins)
-        else:
-            print(c.green + "You won!" + c.b01)
-            wins += 1
-            print("P",wins,": C",cwins)
-            tokens += bet.cBet
-            print("You now have",tokens," tokens")
-    elif bust == "y":
-        if cbust == "y":
-            print(c.yellow + "It's a tie!" + c.b01)
-            print("P",wins,": C",cwins)
-        else:
-            print(c.red + "You lost."+ c.b01)
-            cwins += 1
-            print("P",wins,": C",cwins)
-            tokens -= bet.cBet
-            print("You now have",tokens," tokens")
-    else:
-        if cscore > score:
-            print(c.red + "You lost."+ c.b01)
-            cwins += 1
-            print("P",wins,": C",cwins)
-            tokens -= bet.cBet
-            print("You now have",tokens," tokens")
-        elif cscore < score:
-            print(c.green + "You won!" + c.b01)
-            wins += 1
-            print("P",wins,": C",cwins)
-            tokens += bet.cBet
-            print("You now have",tokens," tokens")
-        else:
-            print(c.yellow + "It's a tie!" + c.b01)
-            print("P",wins,": C",cwins)
-def playAgain():
-    again = input("Would you like to play again?(y/n) > ")
-    if again == "y":
+            elif 'n' in want_to_hit:
+                return False
+                break
+            else:
+                print('{}Please type {}yes{} or {}no{}.'.format(c.x, c.g, c.x, c.r, c.x))
+    except KeyboardInterrupt:
         print(c.cl)
-    else:
         exit()
-def newcard():
-    score = sum(hand)
-    while score <= 21:
-        userCard = input(c.b01 + "Would you like a new card?(y/n) > ").lower()
-        '''adds  a new card to user's hand if they want to'''
-        if userCard == "y":
-            hand.append(deck[position])
-            score = sum(hand)
-            del deck[position]
-            print(c.cl + "Your hand contains " + str(hand) + " for a total of",score,"points.")
+def has_ace(aces):
+    has_ace = False
+    for ace in aces:
+        if ace == 11:
+            aces.remove(11)
+            aces.append(1)
+            has_ace = True
+            break
+    return has_ace, aces
+def get_one_more_card(deck, total):
+    card = deck.pop()
+    title = card[0]
+    total += card[1]
+    print('{}Your new card is the {}{}{}. You now have {}{}{} Points.'.format(c.x, c.b, title, c.x, c.m, total, c.x))
+    return total, deck, title
+def print_hand(hand, total):
+    print('Your hand contains the {}{}{} and the {}{}{} for a total of {}{}{} points.'.format(c.b, hand[0], c.x, c.b, hand[1], c.x, c.m, total, c.x))
 
+def handle_betting(first_time, hand, deck, total, aces):
+    while True:
+        wants_to_hit = ask_to_hit(hand, first_time)
+        if wants_to_hit:
+            first_time = False
+            total, deck, title = get_one_more_card(deck, total)
+            if 'ace' in title:
+                aces[z].append(11)
+            hand.append(title)
+            if total > 21:
+                has_an_ace, aces = has_ace(aces)
+                if has_an_ace is False:
+                    print('Oh No! You busted.')
+                    sleep(3)
+                    break
+                else:
+                    totals[z] -= 10
+                    print(c.x + 'You went over, so your ace valued 11 was changed into a 1.')
+                    print('You now have {}{}{} points.'.format(c.b, totals[z], c.x))
         else:
             break
-    else:
-        if 11 in hand:
-            '''changes 11 in hand to 1'''
-            hand.remove(11)
-            print(c.cl + "Your ace valued 11 was changed into a 1")
-            hand.append(1)
-            score = sum(hand)
-            print("You now have"+str(hand)+"and",score,"Points")
-            if score < 21:
-                '''go to  beginning or has computer play depending'''
-                newcard()
-        else:
-            pass
-def shuffleAndStart():
-    print(c.cl)
-    random.shuffle(deck)
-    hand.append(deck[position]) 
-    del deck[position]
-    hand.append(deck[position]) 
-    del deck[position]
-    score = sum(hand)
-    '''shuffles the deck, deals the player 1 card''' 
-    print("Your hand contains: "+ str(hand) + " for a total of", score,"points.")
-if __name__ == '__main__':
-    try:
-        print(c.cl + c.b01 + "Welcome to Blackjack V 1.0! Created by Peter")
-        print("You have 100 tokens.")
-        tokens = 100
-        hardDifficulty = input("Would you like an" + c.red + " intelligent computer"+c.b01+ "(y/n) > ").lower()
-        if hardDifficulty == "y":
-            mode = True
-        else:
-            mode = False
-        deck = [2,3,4,5,6,7,8,9,10,10,10,10,11] * 4
-        hand = []
-        chand = []
-        cwins = 0
-        wins = 0
-        position = 0
-        #Which card to pull out of deck
-        while True:
-            bet()
-            shuffleAndStart()
-            newcard()
-            computerPlay()
-            winOrLose()
-            playAgain()
-            del hand[:]
-            del chand[:]
-            deck = [2,3,4,5,6,7,8,9,10,10,10,10,11] * 4
-    except KeyboardInterrupt:
-        print(c.cl + "Thanks for playing!\n" + c.x)
-        exit()
+    return hand, deck, total
+def get_aces(hand):
+    aces = []
+    if 'ace' in hand[0]:
+        aces.append(11)
+    elif 'ace' in hand[1]:
+        aces.append(11)
+    return aces
+
+input('{}Press{} enter{} to continue.\n'.format(c.x, c.m, c.x))
+deck = create_cards()
+knows_how_to_play()
+hand, total, deck = get_two_cards(deck)
+aihand, aitotal, deck = get_two_cards(deck)
+ai_aces = get_aces(aihand)
+aces = get_aces(hand)
+print_hand(hand, total)
+hand, deck, total = handle_betting(True, hand, deck, total, aces)
+while aitotal > 17:
+    card = deck.pop()
+    aihand.append(card
+    aitotal += 
