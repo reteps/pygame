@@ -98,7 +98,7 @@ def ask_to_hit(hand, first_time):
                 item_string += item + ' '
             if first_time is False:
                 print(item_string)
-            want_to_hit = input('Would you like to hit (take another card)? > ' + c.c).strip().lower()
+            want_to_hit = input('Would you like to hit (take another card)? (y/n) > ' + c.c).strip().lower()
             if 'y' in want_to_hit:
                 return True
                 break

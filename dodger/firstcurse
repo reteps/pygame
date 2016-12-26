@@ -1,0 +1,31 @@
+#!/usr/bin/env python3
+import curses
+import curses.textpad
+import time
+'''
+https://docs.python.org/2/howto/curses.html
+https://gist.github.com/myano/1055442
+'''
+def reset(screen):
+
+    curses.nocbreak()
+    screen.keypad(0)
+    curses.echo()
+    curses.endwin()
+try:
+    screen = curses.initscr() #creates a window object
+    curses.noecho() #doesn't echo keys to screen
+    curses.cbreak() #doesn't require enter key to be pressed
+    screen.keypad(1) #enable keypad
+    #y,x based in top left
+    x_pos = 0
+    y_pos = 0
+    width = 40
+    height = 7
+    window = curses.newwin(height, width, x_pos, y_pos)
+    textbox = curses.textpad.Textbox(window)
+    text = textbox.edit()
+    curses.addstr(10,0,text.encode('utf_8'))
+except KeyboardInterrupt:
+    reset(screen)
+    exit()
