@@ -1,0 +1,90 @@
+#!/usr/bin/env python3
+import curses
+import curses.textpad
+import time
+'''
+https://docs.python.org/2.0/lib/curses-textpad-objects.html
+https://docs.python.org/2/howto/curses.html
+https://docs.python.org/3/howto/curses.html
+LIBRARY: https://docs.python.org/2/library/curses.html |ascii is ACS|
+MOST HELPFUL: https://www.ironalbatross.net/wiki/index.php?title=Python_Curses
+'''
+class curses_screen:
+    #Why __enter__ and __exit__? http://stackoverflow.com/questions/1984325/explaining-pythons-enter-and-exit
+
+    def __enter__(self):
+        self.screen = curses.initscr() #creates a window object
+        curses.noecho() #doesn't echo keys to screen
+        curses.cbreak() #doesn't require enter key to be pressed
+        self.screen.keypad(True) #enable keypad
+        return self.screen
+    def __exit__(self, a, b, c): #why a, b, c? Needs 4 arguments :http://docs.quantifiedcode.com/python-anti-patterns/correctness/exit_must_accept_three_arguments.html
+        curses.nocbreak()
+        self.screen.keypad(False)
+        curses.echo()
+        curses.endwin()
+def get_key(screen):
+    while True:
+        key = screen.getch()
+        if key == 261:
+            return 'RIGHT'
+        elif key == 260:
+            return 'LEFT'
+    return screen.getch()
+
+def make_fall(screen, x, char, height):
+    screen.addch(0, x, char)
+    for count in range(1, height):
+        screen.clear()
+        screen.addch(count, x, char)
+        screen.refresh()
+        time.sleep(0.05)
+    screen.clear()
+with curses_screen() as screen:
+    SCREEN_HEIGHT, SCREEN_WIDTH = screen.getmaxyx()
+    #y,x based in top left
+    #screen.addch(YPOS,XPOS,char)
+    x_pos = 0
+    y_pos = 0
+    width = 40
+    height = 5
+    y = SCREEN_HEIGHT-1
+    x = round(SCREEN_WIDTH/2)
+    screen.addch(y, x, '#')
+    '''
+    for ypos in range(SCREEN_HEIGHT):
+        screen.addch(ypos, 0, 'X')
+        screen.move(SCREEN_HEIGHT-1, 0)
+        screen.refresh()
+        time.sleep(0.2)
+    '''
+    while True:
+
+        key = get_key(screen)
+        make_fall(screen, 10, 'V', SCREEN_HEIGHT)
+        if key == 'RIGHT': 
+            screen.clear()
+            x += 1
+            screen.addch(y, x, '#')
+        elif key == 'LEFT':
+            screen.clear()
+            x -= 1
+            screen.addch(y, x, '#')
+
+        
+
+    #text_window = curses.newwin(height, width, x_pos, y_pos)
+    #textbox = curses.textpad.Textbox(text_window)
+    #text = textbox.edit() #control + g = stop | text.encode('utf-8')
+    #screen.addstr(6, 0, text.encode('utf-8')) #y, x, text
+    #window.getyx() window.move(y, x)
+'''Attributes for text - arg goes after text
+A_BLINK
+A_BOLD
+A_DIM
+A_REVERSE
+A_STANDOUT
+A_UNDERLINE
+'''
+#curses.wrapper(main_loop) <<< wraps code in a exception catcher, also
+#function need the argument of your screen.
