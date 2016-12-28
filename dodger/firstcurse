@@ -3,29 +3,55 @@ import curses
 import curses.textpad
 import time
 '''
+https://docs.python.org/2.0/lib/curses-textpad-objects.html
 https://docs.python.org/2/howto/curses.html
-https://gist.github.com/myano/1055442
+https://docs.python.org/3/howto/curses.html
+LIBRARY: https://docs.python.org/2/library/curses.html |ascii is ACS|
+MOST HELPFUL: https://www.ironalbatross.net/wiki/index.php?title=Python_Curses
 '''
-def reset(screen):
+class curses_screen:
+    #Why __enter__ and __exit__? http://stackoverflow.com/questions/1984325/explaining-pythons-enter-and-exit
 
-    curses.nocbreak()
-    screen.keypad(0)
-    curses.echo()
-    curses.endwin()
-try:
-    screen = curses.initscr() #creates a window object
-    curses.noecho() #doesn't echo keys to screen
-    curses.cbreak() #doesn't require enter key to be pressed
-    screen.keypad(1) #enable keypad
+    def __enter__(self):
+        self.screen = curses.initscr() #creates a window object
+        curses.noecho() #doesn't echo keys to screen
+        curses.cbreak() #doesn't require enter key to be pressed
+        self.screen.keypad(True) #enable keypad
+        return self.screen
+    def __exit__(self, a, b, c): #why a, b, c? Needs 4 arguments :http://docs.quantifiedcode.com/python-anti-patterns/correctness/exit_must_accept_three_arguments.html
+        curses.nocbreak()
+        self.screen.keypad(False)
+        curses.echo()
+        curses.endwin()
+def get_key(screen):
+    key = None
+    while key is not curses.KEY_LEFT or key is not curses.KEY_RIGHT:
+        key = screen.getch()
+    return key
+with curses_screen() as screen:
+    SCREEN_HEIGHT, SCREEN_WIDTH = screen.getmaxyx()
     #y,x based in top left
+    #screen.addch(YPOS,XPOS,char)
     x_pos = 0
     y_pos = 0
     width = 40
-    height = 7
-    window = curses.newwin(height, width, x_pos, y_pos)
-    textbox = curses.textpad.Textbox(window)
-    text = textbox.edit()
-    curses.addstr(10,0,text.encode('utf_8'))
-except KeyboardInterrupt:
-    reset(screen)
-    exit()
+    height = 5
+    for ypos in range(SCREEN_HEIGHT):
+        screen.addch(ypos, 0, 'X')
+        screen.refresh()
+        time.sleep(0.5)
+            
+    #text_window = curses.newwin(height, width, x_pos, y_pos)
+    #textbox = curses.textpad.Textbox(text_window)
+    #text = textbox.edit() #control + g = stop | text.encode('utf-8')
+    #screen.addstr(6, 0, text.encode('utf-8')) #y, x, text
+'''Attributes for text - arg goes after text
+A_BLINK
+A_BOLD
+A_DIM
+A_REVERSE
+A_STANDOUT
+A_UNDERLINE
+'''
+#curses.wrapper(main_loop) <<< wraps code in a exception catcher, also
+#function need the argument of your screen.
