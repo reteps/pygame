@@ -2,6 +2,7 @@
 import curses
 import curses.textpad
 import time
+import random
 '''
 https://docs.python.org/2.0/lib/curses-textpad-objects.html
 https://docs.python.org/2/howto/curses.html
@@ -17,6 +18,7 @@ class curses_screen:
         curses.noecho() #doesn't echo keys to screen
         curses.cbreak() #doesn't require enter key to be pressed
         self.screen.keypad(True) #enable keypad
+        self.screen.nodelay(True)
         return self.screen
     def __exit__(self, a, b, c): #why a, b, c? Needs 4 arguments :http://docs.quantifiedcode.com/python-anti-patterns/correctness/exit_must_accept_three_arguments.html
         curses.nocbreak()
@@ -32,11 +34,14 @@ def get_key(screen):
             return 'LEFT'
     return screen.getch()
 
-def make_fall(screen, x, char, height):
-    screen.addch(0, x, char)
+def make_fall(screen, poss, char, height):
+    for spos in poss:
+
+        screen.addch(0, spos, char)
     for count in range(1, height):
         screen.clear()
-        screen.addch(count, x, char)
+        for pos in poss:
+            screen.addch(count, pos, char)
         screen.refresh()
         time.sleep(0.05)
     screen.clear()
@@ -60,8 +65,9 @@ with curses_screen() as screen:
     '''
     while True:
 
+        positions = [random.randint(0, 156) for count in range(10)]
         key = get_key(screen)
-        make_fall(screen, 10, 'V', SCREEN_HEIGHT)
+        make_fall(screen, positions, 'V', SCREEN_HEIGHT)
         if key == 'RIGHT': 
             screen.clear()
             x += 1
