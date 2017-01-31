@@ -1,8 +1,16 @@
 #!/usr/bin/env python3
 def make_maze(length, height):
-    positions = [[1] + [0] * (length - 2) + [1] for count in range(height-1)] + [[1] * length]
+    ositions = [[1] + [0] * (length - 2) + [1] for count in range(height-1)] + [[1] * length]
     print(positions)
     startpos = (0,0)
 
+def walk(x,y):
+    positions[y][x] = 1 #visited
+    directions = [(x - 1, y), (x, y + 1), (x + 1, y), (x, y - 1)]
+    random.shuffle(directions)
+    for (newx,newy) in directions:
+        if positions[newy][newx]: #1 == true, so if visited
+            continue
 
+        walk(newx,newy) 
 make_maze(5,5)
