@@ -6,27 +6,19 @@ def make_maze(length, height):
     horizontal = [['###'] * length for count in range(height)]
     vertical = [['#  '] * length for count in range(height)]
     print(positions)
-    walk(0,0,board,positions)
-    for row in board:
-        print(row)
-'''
-# #####
-  #####
-#######
-#######
-'''
-def walk(x,y,board,positions):
-    positions[y][x] = 1 #visited
-    directions = [(x - 1, y), (x, y + 1), (x + 1, y), (x, y - 1)]
-    random.shuffle(directions)
-    for (newx,newy) in directions:
-        if positions[newy][newx]: #1 == true, so if visited
-            continue
-        elif y != newy:
-            horizontal[newy][newx] = '# #'
-        else:
-            vertical[newy][newx] = '  ' 
-        walk(newx,newy,board,positions) 
-        for (a,b) in zip(horizontal,vertical):
-            print(row)
+    walk(0,0)
+    def walk(x,y):
+        positions[y][x] = 1 #visited
+        directions = [(x - 1, y), (x, y + 1), (x + 1, y), (x, y - 1)]
+        random.shuffle(directions)
+        for (newx,newy) in directions:
+            if positions[newy][newx]: #1 == true, so if visited
+                continue
+            elif y != newy:
+                horizontal[newy][newx] = '# #'
+            else:
+                vertical[newy][newx] = '  ' 
+            walk(newx,newy,hor,positions) 
+    for (a,b) in zip(horizontal,vertical):
+        print(a + '\n' + b + '\n')
 make_maze(5,5)
