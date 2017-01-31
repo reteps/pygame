@@ -6,7 +6,7 @@ def make_maze(length, height):
     horizontal = [['###'] * length for count in range(height)]
     vertical = [['#  '] * length for count in range(height)]
     print(positions)
-    walk(0,0)
+    
     def walk(x,y):
         positions[y][x] = 1 #visited
         directions = [(x - 1, y), (x, y + 1), (x + 1, y), (x, y - 1)]
@@ -14,11 +14,12 @@ def make_maze(length, height):
         for (newx,newy) in directions:
             if positions[newy][newx]: #1 == true, so if visited
                 continue
-            elif y != newy:
-                horizontal[newy][newx] = '# #'
-            else:
+            elif x == newx:
+                horizontal[newy][newx] = '#  '
+            elif y == newy:
                 vertical[newy][newx] = '  ' 
-            walk(newx,newy,hor,positions) 
+            walk(newx,newy) 
+    walk(0,0)
     for (a,b) in zip(horizontal,vertical):
         print(a + '\n' + b + '\n')
 make_maze(5,5)
