@@ -2,14 +2,16 @@
 import random
 def make_maze(length, height):
     positions = [[0] * length for count in range(height)]
-    board = [['-#-'] * length for count in range(height)]
+
+    horizontal = [['###'] * length for count in range(height)]
+    vertical = [['#  '] * length for count in range(height)]
     print(positions)
     walk(0,0,board,positions)
     for row in board:
         print(row)
 '''
-#######
-#######
+# #####
+  #####
 #######
 #######
 '''
@@ -20,8 +22,11 @@ def walk(x,y,board,positions):
     for (newx,newy) in directions:
         if positions[newy][newx]: #1 == true, so if visited
             continue
-        board[newy][newx] = '- -'
+        elif y != newy:
+            horizontal[newy][newx] = '# #'
+        else:
+            vertical[newy][newx] = '  ' 
         walk(newx,newy,board,positions) 
-        for row in board:
+        for (a,b) in zip(horizontal,vertical):
             print(row)
 make_maze(5,5)
