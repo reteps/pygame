@@ -1,0 +1,36 @@
+#!/usr/bin/env python3
+
+cards = [[2,"2"], [3,"3"], [4,"4"], [5,"5"], [6,"6"], [7,"7"], [8,"8"], [9,"9"], [10,"10"], [11,"Jack"], [12,"Queen"], [13,"King"], [14,"Ace"]]
+deck = random.shuffle(cards * 4)
+pcards = deck[26:]
+acards = deck[:26]
+while pcards != [] or acards != []:
+    top_card = pcards[0]
+    ai_top_card = acards[0]
+    if top_card[0] > ai_top_card[0]:
+
+        print("Your {} beat the ai's {}".format(top_card[1],ai_top_card[1])
+    elif top_card[0] < ai_top_card[0]:
+
+        print("The ai's {} beat your {}".format(ai_top_card[1],top_card[0])
+    else:
+        war = True
+        pot = []
+        while war:
+            print("It's a war between {}'s!".format(top_card[0])
+            input()
+            
+            top_card = pcards[3]
+            ai_top_card = acards[3]
+            pot.append(pcards[:3] + acards[:3])
+            pcards = pcards[3:]
+
+            acards = acards[3:]
+            if top_card[0] > ai_top_card[0]:
+
+                print("Your {} beat the ai's {}".format(top_card[1],ai_top_card[1])
+                acards += pot
+            elif top_card[0] < ai_top_card[0]:
+                pcards += pot
+                print("The ai's {} beat your {}".format(ai_top_card[1],top_card[0])
+                    
