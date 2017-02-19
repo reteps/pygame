@@ -1,23 +1,38 @@
 #!/usr/bin/env python3
-
+import random
 cards = [[2,"2"], [3,"3"], [4,"4"], [5,"5"], [6,"6"], [7,"7"], [8,"8"], [9,"9"], [10,"10"], [11,"Jack"], [12,"Queen"], [13,"King"], [14,"Ace"]]
-deck = random.shuffle(cards * 4)
+print(cards)
+deck = cards * 4
+random.shuffle(deck)
+print(deck)
 pcards = deck[26:]
 acards = deck[:26]
-while pcards != [] or acards != []:
+while True:
+    if pcards == []:
+        print('The AI won!')
+        break
+
+    elif acards == []:
+        print('You won!')
+        break
     top_card = pcards[0]
     ai_top_card = acards[0]
     if top_card[0] > ai_top_card[0]:
 
-        print("Your {} beat the ai's {}".format(top_card[1],ai_top_card[1])
+        print("Your {} beat the ai's {}".format(top_card[1],ai_top_card[1]))
+        pcards = pcards[1:] + pcards[:1]
+        pcards.append(ai_top_card)
+        del acards[0]
     elif top_card[0] < ai_top_card[0]:
 
-        print("The ai's {} beat your {}".format(ai_top_card[1],top_card[0])
+        acards = acards[1:] + acards[:1]
+        acards.append(top_card)
+        del pcards[0]
+        print("The ai's {} beat your {}".format(ai_top_card[1],top_card[0]))
     else:
-        war = True
         pot = []
-        while war:
-            print("It's a war between {}'s!".format(top_card[0])
+        while True:
+            print("It's a war between {}'s!".format(top_card[0]))
             input()
             
             top_card = pcards[3]
@@ -28,9 +43,12 @@ while pcards != [] or acards != []:
             acards = acards[3:]
             if top_card[0] > ai_top_card[0]:
 
-                print("Your {} beat the ai's {}".format(top_card[1],ai_top_card[1])
+                print("Your {} beat the ai's {}".format(top_card[1],ai_top_card[1]))
                 acards += pot
+                break
             elif top_card[0] < ai_top_card[0]:
                 pcards += pot
-                print("The ai's {} beat your {}".format(ai_top_card[1],top_card[0])
+                print("The ai's {} beat your {}".format(ai_top_card[1],top_card[0]))
+                break
+    input('Enter to continue')
                     
