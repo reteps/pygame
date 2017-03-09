@@ -1,0 +1,250 @@
+#!/usr/bin/env python3
+import sys
+from copy import deepcopy
+from operator import itemgetter
+import getch
+import skilstak.colors as c #colors
+LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$'
+INFO = 'use WASD to move, and r to rotate your ship. Press q to quit and enter to confirm your selection.'
+ACTION_KEYS = {
+    'w':'UP',
+    's':'DOWN',
+    'd':'RIGHT',
+    'a':'LEFT',
+}
+HIT_CHAR = c.r + 'X' + c.x
+MISS_CHAR = c.c + 'X' + c.x
+class Ship:
+    def __init__(self, size, symbol):
+        self.symbol = symbol
+        self.coords = [(x,0) for x in range(size)]
+        self.previous_coords = [(None,None) for _ in range(size)]
+    def shift(self,direction): #moves the ships coordinates
+
+        x_values = list(map(itemgetter(0), self.coords))
+        y_values = list(map(itemgetter(1), self.coords))
+        if direction == 'LEFT' and 0 not in x_values:
+            change = (-1,0)
+        elif direction == 'DOWN' and BOARD_HEIGHT-1 not in y_values:
+            change = (0,1)
+        elif direction == 'UP' and 0 not in y_values:
+            change = (0,-1)
+        elif direction == 'RIGHT' and BOARD_LENGTH-1 not in x_values:
+            change = (1,0)    
+        else:
+            change = (0,0)
+        for i, coord in enumerate(self.coords):
+            self.previous_coords[i] = self.coords[i] 
+            self.coords[i] = (coord[0] + change[0], coord[1] + change[1])
+            
+    def rotate(self): #90 degree clockwise rotation
+        a, b = self.coords[0][0], self.coords[0][1]
+        x, y = self.coords[-1][0], self.coords[-1][1] 
+        newx, newy = -(y-b)+a, (x-a)+b
+        if newy >= 0 and newx >= 0 and newy <= BOARD_HEIGHT-1 and newx <= BOARD_LENGTH-1:
+            for i, coord in enumerate(self.coords):
+                self.previous_coords[i] = self.coords[i]
+                self.coords[i] = (-(self.coords[i][1]-b)+a, (self.coords[i][0]-a)+b)
+
+    def show(self, foreground,background, hasprevious=True): 
+        if hasprevious: #erases the previous cells, draws the new cells
+            for pcoord in self.previous_coords:
+                foreground[pcoord[1]][pcoord[0]] = None
+        for coord in self.coords:
+            foreground[coord[1]][coord[0]] = self.symbol
+        list_display = []
+        for rowi in range(BOARD_HEIGHT): #displays the foreground or background depending on if there is a foreground
+            row = ''
+            for chari in range(BOARD_LENGTH):
+                if foreground[rowi][chari] == None:
+                    char = background[rowi][chari]
+                else:
+                    char = foreground[rowi][chari]
+                row += char + ' '
+            list_display.append(row)
+        display_board = '\n'.join(list_display)
+        print(c.clear + display_board)
+        return foreground
+
+################
+################
+################
+################
+def choose_locations():
+    ships = deepcopy(SHIPS) #doesn't mess them up, for objects you need deepcopy
+    finalcoords = []
+    flatcoords = []
+    background = [['_'] * BOARD_LENGTH for _ in range(BOARD_HEIGHT)]
+    foreground = [[None] * BOARD_LENGTH for _ in range(BOARD_HEIGHT)] 
+    for ship in ships:
+        foreground = ship.show(foreground,background,hasprevious=False)
+        while True:
+            key = getch.getch()
+            if key in ACTION_KEYS:
+                ship.shift(ACTION_KEYS[key]) 
+                foreground = ship.show(foreground,background)
+            elif key == 'r':
+                ship.rotate()
+                foreground = ship.show(foreground,background)
+            elif key == 'q':
+                exit()
+            elif key == '\r' or ord(key) == 10: #enter
+                
+                intersection = list(set(ship.coords).intersection(flatcoords))
+                if not intersection:
+                    finalcoords.append(ship.coords)
+                    flatcoords += ship.coords
+                    for coord in ship.coords:
+                        foreground[coord[1]][coord[0]] = None
+                        background[coord[1]][coord[0]] = ship.symbol
+                    break
+                else:
+                    print('''You already have a ship or part of a ship there.Your current coordinates are {}
+You have placed a ship on these coords, {}. 
+You overlapped on these coords: {}'''.format(ship.coords,flatcoords,intersection))
+            else:
+                print(INFO)
+
+    foreground = ships[-1].show(foreground,background)    
+    return finalcoords
+def display(board):
+
+    side_col = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30] 
+    print('   ' + ' '.join(LETTERS[:len(board[0])]))
+    for i, row in enumerate(board):
+        print(str(side_col[i]) + ('  ' if side_col[i] < 10 else ' ') + ' '.join(row))
+
+def pick_cell(board):
+    while True:
+        raw = input('Aim a missile at ' + c.y)
+        if len(raw) < 2 or len(raw) > 3:
+            print(c.r + 'Invalid Coordinates' + c.x)
+            continue
+        rawx, rawy = raw[0], raw[1:]
+        try:
+            cell = LETTERS.index(rawx.upper())
+            if cell >= BOARD_LENGTH:
+                print(c.r + 'Invalid Letter' + c.x)
+                continue
+        except ValueError:
+            print(c.r + 'Invalid Letter' + c.x)
+            continue
+        try:
+            row = int(rawy) - 1
+            if row >= BOARD_HEIGHT:
+                print(c.r + 'Invalid Number' + c.x)
+                continue
+        except ValueError:
+            print(c.r + 'Invalid Row' + c.x)
+            continue
+        if board[row][cell] == HIT_CHAR or board[row][cell] == MISS_CHAR:
+            print(c.r + 'You already picked this location!' + c.x)
+            continue
+        else:
+            break
+        print(c.x) 
+
+    return (cell,row)
+def check_coords(board, coords):
+    for coord in coords:
+        if board[coord[1]][coord[0]] != HIT_CHAR:
+            return False
+    return True
+def place_cell(board, target, ship_locations):
+    hit = False
+    for i,ship_coords in enumerate(ship_locations):
+        for j,coord in enumerate(ship_coords):
+            if coord == target:
+                board[target[1]][target[0]] = HIT_CHAR
+                
+                if check_coords(board, ship_coords):
+                    del ship_locations[i]
+                    length = len(ship_locations) 
+                    print('{}You sunk one of my ships! There is {} ships left{}.'.format(c.m,length,c.x))
+                    if length == 0:
+                        print('You win!')
+                        exit()
+                else: 
+                    print(c.m + 'You hit my ship!' + c.x)
+                hit = True
+    if not hit:
+        print(c.m + 'You missed!' + c.x)
+        board[target[1]][target[0]] = MISS_CHAR
+    return board, ship_locations
+
+def show_ship_locations(coords, board):
+    for ship in coords:
+        for coord in ship:
+            if board[coord[1]][coord[0]] is not HIT_CHAR:
+                board[coord[1]][coord[0]] = c.y + '*' + c.x
+    display(board)
+
+def show_boards(top, bottom):
+    display(top)
+    print('\nYour Board\n')
+    display(bottom)
+SETTINGS = {
+            'small':[5,5,[Ship(3,'C'),Ship(2,'D'),Ship(2,'d'),Ship(1,'S')] ],
+            'normal':[10,10,[Ship(5,'A'),Ship(4,'B'),Ship(3,'c'),Ship(3,'C'),Ship(2,'D')] ],
+            'impossible':[25,25,[Ship(1,'S')]]
+}
+def print_settings():
+    for setting in SETTINGS.keys():
+        print('{} - {} by {} with {} ships '.format(setting, SETTINGS[setting][0], SETTINGS[setting][1], len(SETTINGS[setting][2])))
+
+if __name__ == '__main__':                
+    try:
+        if len(sys.argv) == 2:
+            if sys.argv[1] in SETTINGS.keys():
+                setting = SETTINGS[sys.argv[1]]
+                BOARD_LENGTH = setting[0]
+                BOARD_HEIGHT = setting[1]
+                SHIPS = setting[2]
+            else:
+                print_settings()
+                exit()
+        else:
+            print_settings()
+            exit()
+        input(c.cl + 'Player 1, choose your locations [W/A/S/D to move, R to rotate and enter to confirm]\n(enter to continue)\n')
+        p1_ship_locations = choose_locations()
+        input(c.cl + 'Player 2, choose your locations [W/A/S/D to move, R to rotate and enter to confirm]\n(enter to continue)\n')
+        p2_ship_locations = choose_locations()
+        p1_board = [['_'] * BOARD_LENGTH for _ in range(BOARD_HEIGHT)]
+        p2_board = [['_'] * BOARD_LENGTH for _ in range(BOARD_HEIGHT)]
+        print(c.cl)
+        while True:
+            #player 1
+            print(c.cl + "Player 1, it's your turn.\n")
+            show_boards(p2_board, p1_board)
+            p1_location = pick_cell(p2_board)
+            print(c.cl)
+            p2_board, p2_ship_locations = place_cell(p2_board, p1_location, p2_ship_locations)
+            show_boards(p2_board, p1_board)
+            if input(c.g + '\nEnd your turn (enter) OR show your ships(anything + enter)\n' + c.x) != '':
+                print(c.cl)
+                display(p2_board)
+                print('\nYour Board\n')
+                show_ship_locations(p1_ship_locations,deepcopy(p1_board))
+                input(c.g + '\nEnd your turn (enter) \n' + c.x)
+            print(c.cl + "Player 2, it's your turn.\n")
+            #player 2
+            show_boards(p1_board, p2_board)
+            p2_location = pick_cell(p1_board)
+            print(c.cl)
+            p1_board, p1_ship_locations = place_cell(p1_board, p2_location, p1_ship_locations)
+            show_boards(p1_board, p2_board)
+                
+            if input(c.g + '\nEnd your turn (enter) OR show your ships(anything + enter)\n' + c.x) != '':
+                print(c.cl)
+                display(p1_board)
+                print('\nYour Board\n')
+                show_ship_locations(p2_ship_locations,deepcopy(p2_board))
+                input(c.g + '\nEnd your turn (enter) \n' + c.x)
+
+            
+            
+    except KeyboardInterrupt:
+        print(c.cl)
+        exit()
+        
